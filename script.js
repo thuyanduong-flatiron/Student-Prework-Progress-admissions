@@ -1,75 +1,113 @@
-var batchId = parseInt(window.location.href.split("batches/")[1]),
-    trackId = 62141;
+var batchId = parseInt(window.location.href.split("batches/")[1]);
+var trackId = 62141; //change this number every time there is a new prewrok
+var totalLessons = 166; //change this number every time there is a new prewrok
+var errorMessage = `
+Error Generating Prework Report! Are you on a Learn.co page? Does the URL begin with:
+  https://learn.co/batches/
+
+Note: This report generator only works with the PREWORK: Software Engineering (fswd-prework-2-01) track. If the Prework has been updated recently, you will need to update this tool.
+`
 
 function init() {
-    var e = document.querySelector("#fried-chicken");
-    e || ((e = document.createElement("div")).id = "fried-chicken", document.querySelector("#main").prepend(e)), e.style.cssText = "padding: 75px; display: block; position: fixed; z-index: 100; width: 100%; height: 100%; overflow: auto; background-color: rgb(245,245,245)",
-    e.innerHTML = '<button>Back To Batch View</button><h1>Loading results... <span id="chocolate-bar"></span></h1><div id="penguins"></div><div id="waffles"></div>', e.querySelector("button").addEventListener("click", () => {
-        document.querySelector("#fried-chicken").style.display = "none"
-    }), getLessons()
+    var report = document.querySelector("#fried-chicken")
+    if(!report){
+      report = document.createElement("div")
+      report.id = "fried-chicken"
+      document.querySelector("#main").prepend(report)
+      report.style.cssText = "padding: 75px; display: block; position: fixed; z-index: 100; width: 100%; height: 100%; overflow: auto; background-color: rgb(245,245,245)"
+    }
+    report.innerHTML = `<button>Back To Batch View</button><h1>Loading results... <span id="chocolate-bar">0/${totalLessons}</span></h1><div id="penguins"></div><div id="waffles"></div>`
+    report.querySelector("button").addEventListener("click", () => {
+        report.style.display = "none"
+    })
+    getLessons()
 }
 
 function getLessons() {
-    var e = `https://learn.co/api/v1/batches/${batchId}/tracks/${trackId}/deployed`,
-        t = fetch(`https://learn.co/api/v1/batches/${batchId}/tracks/${trackId}/progress`).then(e => e.json()),
-        n = fetch(e).then(e => e.json());
-    Promise.all([t, n]).then(e => {
-        getIndividualData(e[0].map(e => (e.lessons = [], e)), e[1])
+    var studentsURL = `https://learn.co/api/v1/batches/${batchId}/tracks/${trackId}/progress`
+    var lessonsURL = `https://learn.co/api/v1/batches/${batchId}/tracks/${trackId}/deployed`
+    var studentsPromise = fetch(studentsURL).then(res => res.json())
+    var lessonsPromise = fetch(lessonsURL).then(res => res.json())
+    Promise.all([studentsPromise, lessonsPromise]).then(promiseArray => {
+      var studentData = promiseArray[0].map(student => {
+        student.lessons = []
+        student.num_lessons_completed = 0
+        return student
+      })
+      var lessonsData = promiseArray[1]
+      getIndividualData(studentData, lessonsData)
     })
 }
 
-function getIndividualData(e, t) {
-    let n = [],
-        o = 0,
-        a = 0;
-    t.topics.forEach(e => {
-        e.units.forEach(e => {
-            o += e.lessons.length
-        })
-    }), t.topics.forEach(e => {
-        e.units.forEach(e => {
-            e.lessons.forEach(e => {
-                let t = fetch(`https://learn.co/api/v1/batches/${batchId}/lessons/${e.node.id}`).then(e => (a++, document.querySelector("#chocolate-bar").innerText = `${a}/${o}`, e.json()));
-                n.push(t)
+function getIndividualData(studentData, lessonsData) {
+    var allLessonsPromises = []
+    var counter = 0;
+    lessonsData.topics.forEach(topic => {
+        topic.units.forEach(unit => {
+            unit.lessons.forEach(lesson => {
+                var promise = fetch(`https://learn.co/api/v1/batches/${batchId}/lessons/${lesson.node.id}`)
+                  .then(res => {
+                    counter++;
+                    document.querySelector("#chocolate-bar").innerText = `${counter}/${totalLessons}`
+                    return res.json()
+                  });
+                allLessonsPromises.push(promise)
             })
         })
-    }), Promise.all(n).then(t => {
-        compileResults(e, t)
+    });
+    Promise.all(allLessonsPromises).then(lessonsStudentsData => {
+        compileResults(studentData, lessonsStudentsData)
     })
 }
 
-function compileResults(e, t) {
-    t.forEach(t => {
-        t.students.forEach(n => {
-            var o, a = e.find(e => e.id === n.id);
-            n.completed_at ? o = "✅ " : n.started_at && !n.completed_at ? o = "💪 " : n.started_at || (o = "❌ "), o += t.title, a.lessons.push(o)
-        })
-    }), printStudentProgress(e)
+function compileResults(studentData, lessonsStudentsData){
+  lessonsStudentsData.forEach(lesson => {
+    lesson.students.forEach(student => {
+      let studentsData = studentData.find(studentsData => studentsData.id === student.id)
+      let progress
+      if(student.completed_at){
+        studentsData.num_lessons_completed += 1
+        progress = `✅ `
+      }else if(student.started_at && !student.completed_at){
+        progress = `💪 `
+      }else if(!student.started_at){
+        progress = `❌ `
+      }
+      progress += lesson.title
+      studentsData.lessons.push(progress)
+    })
+  })
+  printStudentProgress(studentData)
 }
 
 function printStudentProgress(studentData) {
   var penguins = document.querySelector("#penguins")
   penguins.innerHTML='<h5>Students:</h5>'
-    addContent("", "p"), studentData.forEach(student => {
+    addContent("", "p")
+    studentData.forEach(student => {
         var link = document.createElement("p")
-        link.innerHTML = `<a href="#penguin-${student.id}">${student.full_name}</a>`
+        link.innerHTML = `<a href="#penguin-${student.id}">${student.full_name}</a>: <span>${student.num_lessons_completed}/${totalLessons}<span>`
         penguins.append(link)
-        addContent(`${student.full_name}:`, "h3", `penguin-${student.id}`), student.lessons.forEach(e => {
-            addContent(e, "p")
-        }), addContent("", "p")
+        addContent(`${student.full_name}:`, "h3", `penguin-${student.id}`)
+        student.lessons.forEach(studentsLesson => {
+            addContent(studentsLesson, "p")
+        })
+        addContent("", "p")
         addContent(`<a href="#penguins">Back To The Top</a>`, "p")
     })
 }
 
-function addContent(e, t, id) {
-    var n = document.createElement(t);
+function addContent(content, tag, id) {
+    var el = document.createElement(tag);
     if(id){
-      n.id = id
+      el.id = id
     }
-    n.innerHTML = e, document.querySelector("#waffles").append(n)
+    el.innerHTML = content
+    document.querySelector("#waffles").append(el)
 }
-Number.isInteger(batchId) && Number.isInteger(trackId) ? init() : alert(`Error! Are you on a Learn.co page? Does the URL begin with:
-  https://learn.co/batches/ ?
 
-Note: If the Prework track has been updated recently, this will also break this report generator.
-  `);
+if(Number.isInteger(batchId) && Number.isInteger(trackId)){
+  init()
+}else{
+  alert(errorMessage)
+}
