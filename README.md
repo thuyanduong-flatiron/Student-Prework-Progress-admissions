@@ -14,21 +14,25 @@ javascript:(function(){var batchId=parseInt(window.location.href.split("batches/
 
 ### How to Install in Google Chrome:
 1. Create a bookmark from any page by clicking the star by the address bar.
+![Chrome1]('./assets/chrome1.png')
 
 2. Click on the More... button.
+![Chrome2]('./assets/chrome2.png')
 
 3. Click the Save button after filling out the Name and URL.
-
+![Chrome3]('./assets/chrome3.png')
 
 ### How to Install in Microsoft Edge:
 * Creating a bookmark in Microsoft Edge is nearly identical to the Chrome instructions above.
 
 ### How to Install in Mozilla FireFox:
 1. Create a new bookmark.
+![Firefox1]('./assets/firefox1.png')
 
 2. Copy and paste the above code into the Location, then click Save.
-
+![Firefox2]('./assets/firefox2.png')
 
 ## How To Use Instructions
 
-View any batch on Learn.co. Click your new bookmark and wait a few seconds as the page is reloaded and will eventually show each student's progress report. To exit or go back to the batch list, click the Back To Batch View button. 
+View any batch on Learn.co. Click your new bookmark and wait a few seconds as the page is reloaded and will eventually show each student's progress report. To exit or go back to the batch list, click the Back To Batch View button.
+![Demo]('./assets/demo.gif')
