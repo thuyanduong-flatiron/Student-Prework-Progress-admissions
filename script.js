@@ -2,20 +2,21 @@ var batchId = parseInt(window.location.href.split("batches/")[1]);
 var trackId = 62141; //change this number every time there is a new prewrok
 var totalLessons = 166; //change this number every time there is a new prewrok
 var errorMessage = `
-Error Generating Prework Report! Double check that you are on a Learn.co page? Does the URL begin with:
+Error Generating Prework Report! Double check that you are on a Learn.co page. Does the URL begin with:
     https://learn.co/batches/
 
 Note: This report generator only works with the PREWORK: Software Engineering (fswd-prework-2-01) track. If the Prework has been updated recently, you will need to update this tool. Visit https://github.com/thuyanduong-flatiron/Student-Prework-Progress-admissions for the latest version.
 `
 
 function init() {
+    console.log('start report')
     var report = document.querySelector("#fried-chicken")
     if(!report){
       report = document.createElement("div")
       report.id = "fried-chicken"
       document.querySelector("#main").prepend(report)
-      report.style.cssText = "padding: 75px; display: block; position: fixed; z-index: 100; width: 100%; height: 100%; overflow: auto; background-color: rgb(245,245,245)"
     }
+    report.style.cssText = "padding: 75px; display: block; position: fixed; z-index: 100; width: 100%; height: 100%; overflow: auto; background-color: rgb(245,245,245)"
     report.innerHTML = `<button>Back To Batch View</button><h1>Loading results... <span id="chocolate-bar">0/${totalLessons}</span></h1><div id="penguins"></div><div id="waffles"></div>`
     report.querySelector("button").addEventListener("click", () => {
         report.style.display = "none"
@@ -48,6 +49,7 @@ function getIndividualData(studentData, lessonsData) {
                 var promise = fetch(`https://learn.co/api/v1/batches/${batchId}/lessons/${lesson.node.id}`)
                   .then(res => {
                     counter++;
+                    console.log(`Fetched ${counter} lessons`)
                     document.querySelector("#chocolate-bar").innerText = `${counter}/${totalLessons}`
                     return res.json()
                   }).catch(()=>alert(errorMessage));
@@ -95,6 +97,7 @@ function printStudentProgress(studentData) {
         addContent("", "p")
         addContent(`<a href="#penguins">Back To The Top</a>`, "p")
     })
+    console.log('end report')
 }
 
 function addContent(content, tag, id) {
