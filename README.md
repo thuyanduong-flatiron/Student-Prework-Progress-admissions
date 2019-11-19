@@ -8,7 +8,7 @@ The current version of this tool works with the **PREWORK: Software Engineering 
 
 View any batch on Learn.co. Click on the bookmarked tool and wait a few seconds as the page is reloaded and will eventually show each student's progress report. To exit or go back to the batch list, click the Back To Batch View button.
 
-![Demo](./assets/demo.gif)
+![Demo](./demo.gif)
 
 ## Installation Instructions
 
