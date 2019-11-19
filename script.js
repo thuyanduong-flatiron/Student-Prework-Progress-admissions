@@ -2,10 +2,10 @@ var batchId = parseInt(window.location.href.split("batches/")[1]);
 var trackId = 62141; //change this number every time there is a new prewrok
 var totalLessons = 166; //change this number every time there is a new prewrok
 var errorMessage = `
-Error Generating Prework Report! Are you on a Learn.co page? Does the URL begin with:
-  https://learn.co/batches/
+Error Generating Prework Report! Double check that you are on a Learn.co page? Does the URL begin with:
+    https://learn.co/batches/
 
-Note: This report generator only works with the PREWORK: Software Engineering (fswd-prework-2-01) track. If the Prework has been updated recently, you will need to update this tool.
+Note: This report generator only works with the PREWORK: Software Engineering (fswd-prework-2-01) track. If the Prework has been updated recently, you will need to update this tool. Visit https://github.com/thuyanduong-flatiron/Student-Prework-Progress-admissions for the latest version.
 `
 
 function init() {
@@ -26,8 +26,8 @@ function init() {
 function getLessons() {
     var studentsURL = `https://learn.co/api/v1/batches/${batchId}/tracks/${trackId}/progress`
     var lessonsURL = `https://learn.co/api/v1/batches/${batchId}/tracks/${trackId}/deployed`
-    var studentsPromise = fetch(studentsURL).then(res => res.json())
-    var lessonsPromise = fetch(lessonsURL).then(res => res.json())
+    var studentsPromise = fetch(studentsURL).then(res => res.json()).catch(()=>alert(errorMessage))
+    var lessonsPromise = fetch(lessonsURL).then(res => res.json()).catch(()=>alert(errorMessage))
     Promise.all([studentsPromise, lessonsPromise]).then(promiseArray => {
       var studentData = promiseArray[0].map(student => {
         student.lessons = []
@@ -50,7 +50,7 @@ function getIndividualData(studentData, lessonsData) {
                     counter++;
                     document.querySelector("#chocolate-bar").innerText = `${counter}/${totalLessons}`
                     return res.json()
-                  });
+                  }).catch(()=>alert(errorMessage));
                 allLessonsPromises.push(promise)
             })
         })
