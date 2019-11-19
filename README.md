@@ -4,6 +4,11 @@ This tool will allow you to see the PREWORK progress of each individual student 
 
 The current version of this tool works with the **PREWORK: Software Engineering (fswd-prework-2-01)** track.
 
+## How To Use Instructions
+
+View any batch on Learn.co. Click on the bookmarked tool and wait a few seconds as the page is reloaded and will eventually show each student's progress report. To exit or go back to the batch list, click the Back To Batch View button.
+![Demo](./assets/demo.gif)
+
 ## Installation Instructions
 
 Create a new book mark titled `Show Prework Progress Report`. Copy and paste the following into the URL:
@@ -31,8 +36,3 @@ javascript:(function(){var batchId=parseInt(window.location.href.split("batches/
 
 2. Copy and paste the above code into the Location, then click Save.
 ![Firefox2](./assets/firefox2.png)
-
-## How To Use Instructions
-
-View any batch on Learn.co. Click your new bookmark and wait a few seconds as the page is reloaded and will eventually show each student's progress report. To exit or go back to the batch list, click the Back To Batch View button.
-![Demo](./assets/demo.gif)
